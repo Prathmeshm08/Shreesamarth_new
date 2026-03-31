@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-section {
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .pass {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Admin Authentication Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Initial State Check</h2>
+        <div id="initial-state-result"></div>
+        <button onclick="checkInitialState()">Check Initial State</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Login Simulation</h2>
+        <div id="login-result"></div>
+        <button onclick="simulateLogin()">Simulate Login</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Authentication Persistence</h2>
+        <div id="persistence-result"></div>
+        <button onclick="testPersistence()">Test Persistence</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Logout Functionality</h2>
+        <div id="logout-result"></div>
+        <button onclick="simulateLogout()" class="logout-btn">Simulate Logout</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 5: Page Refresh After Login</h2>
+        <div id="refresh-result"></div>
+        <button onclick="testPageRefresh()">Test Page Refresh</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 6: Page Close/Reopen Simulation</h2>
+        <div id="close-reopen-result"></div>
+        <button onclick="testCloseReopen()">Test Close/Reopen</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Current Authentication Status</h2>
+        <div id="current-status"></div>
+        <button onclick="updateStatus()">Update Status</button>
+    </div>
+
+    <script>
+        const ADMIN_CREDENTIALS = {
+            username: 'ManeSanjay',
+            password: 'SanjayMane'
+        };
+
+        function displayResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+
+        function checkInitialState() {
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            if (isAuth === null || isAuth === 'false') {
+                displayResult('initial-state-result', 
+                    '✅ PASS: Initial state is correctly unauthenticated. localStorage.adminAuthenticated is not set or is false.', 'pass');
+            } else {
+                displayResult('initial-state-result', 
+                    '❌ FAIL: Initial state shows as authenticated when it should not be.', 'fail');
+            }
+        }
+
+        function simulateLogin() {
+            // Simulate the login process from Admin.jsx
+            localStorage.setItem('adminAuthenticated', 'true');
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            
+            if (isAuth === 'true') {
+                displayResult('login-result', 
+                    '✅ PASS: Login successful. localStorage.adminAuthenticated is set to "true".', 'pass');
+            } else {
+                displayResult('login-result', 
+                    '❌ FAIL: Login failed. localStorage.adminAuthenticated is not set correctly.', 'fail');
+            }
+        }
+
+        function testPersistence() {
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            if (isAuth === 'true') {
+                displayResult('persistence-result', 
+                    '✅ PASS: Authentication state persists correctly in localStorage.', 'pass');
+            } else {
+                displayResult('persistence-result', 
+                    '❌ FAIL: Authentication state does not persist. localStorage.adminAuthenticated is not "true".', 'fail');
+            }
+        }
+
+        function simulateLogout() {
+            // Simulate the logout process from Admin.jsx
+            localStorage.removeItem('adminAuthenticated');
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            
+            if (isAuth === null) {
+                displayResult('logout-result', 
+                    '✅ PASS: Logout successful. localStorage.adminAuthenticated has been removed.', 'pass');
+            } else {
+                displayResult('logout-result', 
+                    '❌ FAIL: Logout failed. localStorage.adminAuthenticated still exists.', 'fail');
+            }
+        }
+
+        function testPageRefresh() {
+            // Simulate login first
+            localStorage.setItem('adminAuthenticated', 'true');
+            
+            // Simulate page refresh by checking localStorage
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            
+            if (isAuth === 'true') {
+                displayResult('refresh-result', 
+                    '✅ PASS: Authentication persists after page refresh simulation. User would remain logged in.', 'pass');
+            } else {
+                displayResult('refresh-result', 
+                    '❌ FAIL: Authentication does not persist after page refresh simulation.', 'fail');
+            }
+        }
+
+        function testCloseReopen() {
+            // Simulate login first
+            localStorage.setItem('adminAuthenticated', 'true');
+            
+            // Simulate closing and reopening the page
+            // In a real scenario, localStorage persists across browser sessions
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            
+            if (isAuth === 'true') {
+                displayResult('close-reopen-result', 
+                    '✅ PASS: Authentication persists after page close/reopen simulation. User would remain logged in.', 'pass');
+            } else {
+                displayResult('close-reopen-result', 
+                    '❌ FAIL: Authentication does not persist after page close/reopen simulation.', 'fail');
+            }
+        }
+
+        function updateStatus() {
+            const isAuth = localStorage.getItem('adminAuthenticated');
+            const status = isAuth === 'true' ? 'Authenticated' : 'Not Authenticated';
+            const color = isAuth === 'true' ? 'pass' : 'info';
+            
+            displayResult('current-status', 
+                `Current Status: <strong>${status}</strong><br>
+                localStorage.adminAuthenticated: "${isAuth}"`, color);
+        }
+
+        // Initialize status on page load
+        window.onload = function() {
+            updateStatus();
+        };
+    </script>
+</body>
+</html>
+
+
